@@ -39,7 +39,7 @@ class ProductsSpider(scrapy.Spider):
             }
 
         # Paginação
-        if (page + 1) * PRODUCTS_PER_PAGE < total and page < 0:
+        if (page + 1) * PRODUCTS_PER_PAGE < total:
             url = get_url(filter_code, page + 1)
 
             yield scrapy.Request(url=url, callback=self.parse)
