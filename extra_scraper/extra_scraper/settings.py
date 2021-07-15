@@ -89,3 +89,6 @@ AUTOTHROTTLE_START_DELAY = 2
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+MAX_PRODUCTS_PAGE = 1
+MAX_REVIEW_PAGE = -1

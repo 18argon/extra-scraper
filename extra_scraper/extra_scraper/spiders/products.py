@@ -2,13 +2,15 @@ import json
 from urllib import parse
 import scrapy
 from extra_scraper.items import ReviewItem, ProductItem
+from scrapy.utils.project import get_project_settings
 
+settings = get_project_settings()
 
 PRODUCTS_PER_PAGE = 20
 REVIEWS_PER_PAGE = 3
 
-MAX_PRODUCTS_PAGE = 1
-MAX_REVIEW_PAGE = 1
+MAX_PRODUCTS_PAGE = settings['MAX_PRODUCTS_PAGE']
+MAX_REVIEW_PAGE = settings['MAX_REVIEW_PAGE']
 
 
 def get_products_url(filter_code, page=0, quantityPerPage=PRODUCTS_PER_PAGE):
@@ -51,10 +53,9 @@ class ProductsSpider(scrapy.Spider):
         yield scrapy.Request(url=get_reviews_url(product['id']), callback=self.parse_reviews)
 
         # Paginação
-        if (page + 1) * PRODUCTS_PER_PAGE < total and (page + 1) < MAX_PRODUCTS_PAGE:
-            url = get_products_url(filter_code, page + 1)
-
-            yield scrapy.Request(url=url, callback=self.parse)
+        if (page + 1) * PRODUCTS_PER_PAGE < total:
+            if MAX_PRODUCTS_PAGE == -1 or (page + 1) < MAX_PRODUCTS_PAGE:
+                yield scrapy.Request(url=get_products_url(filter_code, page + 1), callback=self.parse)
 
     def parse_reviews(self, response):
         url_split = parse.urlsplit(response.url)
@@ -76,5 +77,6 @@ class ProductsSpider(scrapy.Spider):
                 likes=user_review['likes'],
             )
 
-        if ((page + 1) * REVIEWS_PER_PAGE < review['ratingQty'] or not review['lastPage']) and (page + 1) < MAX_REVIEW_PAGE:
-            yield scrapy.Request(url=get_reviews_url(productId, page+1), callback=self.parse_reviews)
+        if ((page + 1) * REVIEWS_PER_PAGE < review['ratingQty'] or not review['lastPage']):
+            if MAX_REVIEW_PAGE == -1 or (page + 1) < MAX_REVIEW_PAGE:
+                yield scrapy.Request(url=get_reviews_url(productId, page+1), callback=self.parse_reviews)
