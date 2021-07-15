@@ -7,6 +7,8 @@ import scrapy
 
 
 class ProductItem(scrapy.Item):
-   title = scrapy.Field()
-   skuId = scrapy.Field()
-   url = scrapy.Field()
+    productId = scrapy.Field()
+    skuId = scrapy.Field()
+    filter_code = scrapy.Field
+    title = scrapy.Field()
+    url = scrapy.Field()
